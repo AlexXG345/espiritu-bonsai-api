@@ -8,21 +8,18 @@ app.use(cors());
 app.use(express.json());
 
 // Conexión a la base de datos
-const db = mysql.createConnection({
+
+const db = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
-  port: 3306
+  port: 3306,
+  waitForConnections: true,
+  connectionLimit: 10
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error('Error conectando a la base de datos:', err);
-    return;
-  }
-  console.log('✅ Conectado a la base de datos');
-});
+console.log('✅ Pool de conexiones creado');
 
 // RUTAS 
 
