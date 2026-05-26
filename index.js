@@ -7,7 +7,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Conexión a la base de datos
+// conexión a la base de datos
 
 const db = mysql.createPool({
   host: process.env.DB_HOST,
@@ -23,7 +23,7 @@ console.log('✅ Pool de conexiones creado');
 
 // RUTAS 
 
-// Obtener los bonsáis con las etiquetas
+// obtener los bonsáis con las etiquetas
 app.get('/api/bonsais', (req, res) => {
   const query = `
     SELECT 
@@ -51,7 +51,7 @@ app.get('/api/bonsais', (req, res) => {
   });
 });
 
-// Obtener un bonsái por id
+// obtener un bonsái por id
 app.get('/api/bonsais/:id', (req, res) => {
   const query = `
     SELECT b.*,
@@ -68,6 +68,28 @@ app.get('/api/bonsais/:id', (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     if (results.length === 0) return res.status(404).json({ error: 'Bonsái no encontrado' });
     res.json(results[0]);
+  });
+});
+
+// agregar un bonsái
+app.post('/api/bonsais', (req, res) => {
+  const { nombre, edad, sustrato, descripcion, cuidados, precio, stock } = req.body;
+  
+  if (!nombre || !precio) {
+    return res.status(400).json({ error: 'Nombre y precio son obligatorios' });
+  }
+
+  const query = `
+    INSERT INTO Bonsai (nombre, edad, sustrato, descripcion, cuidados, precio, stock)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `;
+  
+  db.query(query, [nombre, edad || 0, sustrato, descripcion, cuidados, precio, stock || 0], (err, result) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.status(201).json({ 
+      mensaje: 'Bonsái creado exitosamente',
+      id: result.insertId 
+    });
   });
 });
 
