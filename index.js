@@ -71,28 +71,6 @@ app.get('/api/bonsais/:id', (req, res) => {
   });
 });
 
-// agregar un bonsái
-app.post('/api/bonsais', (req, res) => {
-  const { nombre, edad, sustrato, descripcion, cuidados, precio, stock } = req.body;
-  
-  if (!nombre || !precio) {
-    return res.status(400).json({ error: 'Nombre y precio son obligatorios' });
-  }
-
-  const query = `
-    INSERT INTO Bonsai (nombre, edad, sustrato, descripcion, cuidados, precio, stock)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
-  `;
-  
-  db.query(query, [nombre, edad || 0, sustrato, descripcion, cuidados, precio, stock || 0], (err, result) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.status(201).json({ 
-      mensaje: 'Bonsái creado exitosamente',
-      id: result.insertId 
-    });
-  });
-});
-
 // SERVIDOR 
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
